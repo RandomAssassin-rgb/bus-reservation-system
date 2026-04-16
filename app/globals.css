@@ -122,9 +122,58 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground text-[15.5px] leading-relaxed;
+    background: #f7f8fc;
   }
   html {
-    @apply font-sans;
+    @apply font-sans text-[16px];
+    color-scheme: light;
+  }
+  h1 {
+    @apply tracking-tight;
+  }
+  h2 {
+    @apply tracking-tight;
+  }
+}
+
+@layer utilities {
+  .tf-container {
+    @apply mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8;
+  }
+
+  .tf-section {
+    @apply mt-10;
+  }
+
+  .tf-heading {
+    @apply text-3xl font-bold text-zinc-900 md:text-4xl;
+  }
+
+  .tf-subtext {
+    @apply text-base text-zinc-600;
+  }
+
+  .premium-card {
+    @apply rounded-2xl border border-zinc-200/70 bg-white shadow-[0_14px_42px_-22px_rgba(15,23,42,0.34)];
+  }
+
+  .premium-gradient {
+    background:
+      radial-gradient(circle at 12% 8%, rgba(216, 78, 85, 0.15), transparent 35%),
+      radial-gradient(circle at 92% 8%, rgba(94, 132, 255, 0.22), transparent 38%),
+      linear-gradient(130deg, #2b2965 0%, #5344be 52%, #6aa6ea 100%);
+  }
+
+  .premium-orb {}
+  .premium-noise {}
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 }
