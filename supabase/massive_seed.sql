@@ -33,12 +33,12 @@ select
     true
 from (
     values 
-    ('Elite Express', 'MH', 'AC', 40, '["WiFi","Charging Point","Water Bottle","Tracking"]'::jsonb),
-    ('Nexus Sleeper', 'DL', 'Sleeper', 36, '["Blanket","Reading Light","Curtains","Tracking"]'::jsonb),
-    ('Urban Runner', 'KA', 'Non-AC', 42, '["Charging Point"]'::jsonb),
-    ('Velocity Pro', 'TS', 'Semi-Sleeper', 45, '["WiFi","Refreshments","Tracking"]'::jsonb),
-    ('Horizon Luxury', 'WB', 'AC', 40, '["WiFi","Movie Screen","Charging Point"]'::jsonb),
-    ('Titan Sleeper', 'GA', 'Sleeper', 32, '["Premium Bedding","AC","Tracking"]'::jsonb)
+    ('Elite Express', 'MH', 'AC', 40, '{"WiFi","Charging Point","Water Bottle","Tracking"}'),
+    ('Nexus Sleeper', 'DL', 'Sleeper', 36, '{"Blanket","Reading Light","Curtains","Tracking"}'),
+    ('Urban Runner', 'KA', 'Non-AC', 42, '{"Charging Point"}'),
+    ('Velocity Pro', 'TS', 'Semi-Sleeper', 45, '{"WiFi","Refreshments","Tracking"}'),
+    ('Horizon Luxury', 'WB', 'AC', 40, '{"WiFi","Movie Screen","Charging Point"}'),
+    ('Titan Sleeper', 'GA', 'Sleeper', 32, '{"Premium Bedding","AC","Tracking"}')
 ) as templates(name, prefix, type, seats, amenities)
 cross join generate_series(1, 8) -- Create 48 unique buses
 on conflict (bus_number) do nothing;
