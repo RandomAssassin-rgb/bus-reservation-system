@@ -58,6 +58,32 @@ export default async function SearchPage({
 
       {/* Filter Bar */}
       <form className="reveal-up scroll-reveal glass p-4 rounded-3xl mb-8 flex flex-wrap gap-4 items-end border-white/5">
+        <div className="flex-1 min-w-[150px] space-y-2">
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Strategic Origin</label>
+          <select name="from" defaultValue={(params as { from?: string }).from ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
+            <option value="" className="bg-zinc-900 text-white">All Origins</option>
+            <option value="Kolkata" className="bg-zinc-900 text-white">Kolkata</option>
+            <option value="Mumbai" className="bg-zinc-900 text-white">Mumbai</option>
+            <option value="Delhi" className="bg-zinc-900 text-white">Delhi</option>
+            <option value="Pune" className="bg-zinc-900 text-white">Pune</option>
+            <option value="Jaipur" className="bg-zinc-900 text-white">Jaipur</option>
+            <option value="Durgapur" className="bg-zinc-900 text-white">Durgapur</option>
+          </select>
+        </div>
+
+        <div className="flex-1 min-w-[150px] space-y-2">
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Target</label>
+          <select name="to" defaultValue={(params as { to?: string }).to ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
+            <option value="" className="bg-zinc-900 text-white">All Destinations</option>
+            <option value="Kolkata" className="bg-zinc-900 text-white">Kolkata</option>
+            <option value="Mumbai" className="bg-zinc-900 text-white">Mumbai</option>
+            <option value="Delhi" className="bg-zinc-900 text-white">Delhi</option>
+            <option value="Pune" className="bg-zinc-900 text-white">Pune</option>
+            <option value="Jaipur" className="bg-zinc-900 text-white">Jaipur</option>
+            <option value="Durgapur" className="bg-zinc-900 text-white">Durgapur</option>
+          </select>
+        </div>
+
         <div className="flex-1 min-w-[200px] space-y-2">
           <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Fleet Type</label>
           <select name="busType" defaultValue={(params as { busType?: string }).busType ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
