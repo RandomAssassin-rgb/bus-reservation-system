@@ -112,8 +112,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Floating Island Search - Overlays Transition */}
-      <div className="relative z-30 -mt-20 px-8">
+      {/* Floating Island Search - Sitting below Hero */}
+      <div className="relative z-30 py-20 px-8">
         <StickySearch />
       </div>
 
