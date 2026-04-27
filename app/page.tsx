@@ -106,9 +106,9 @@ export default function Home() {
         </div>
 
         {/* Cinematic Scroll Indicator */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/20">
-           <p className="text-[10px] font-bold uppercase tracking-[0.4em]">Scroll to Explore</p>
-           <div className="w-[1px] h-20 bg-gradient-to-b from-white/20 to-transparent" />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 text-white/10 z-20 pointer-events-none">
+           <p className="text-[9px] font-bold uppercase tracking-[0.6em] animate-pulse whitespace-nowrap">Scroll to Explore</p>
+           <div className="w-[1px] h-16 bg-gradient-to-b from-white/20 via-white/5 to-transparent" />
         </div>
       </section>
 
