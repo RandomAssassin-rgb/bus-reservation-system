@@ -16,6 +16,13 @@ export default async function SearchPage({
   const params = await searchParams;
   const schedules = await getSchedules(params);
 
+  const safeFormat = (dateStr: string | undefined | null, formatStr: string, fallback: string = "N/A") => {
+    if (!dateStr) return fallback;
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return fallback;
+    return format(date, formatStr);
+  };
+
   return (
     <main className="mx-auto max-w-6xl px-4 py-24 flex flex-1 flex-col">
       {/* Header Banner */}
@@ -35,7 +42,7 @@ export default async function SearchPage({
               <span className="text-primary">→</span>
               <span>{params.to || "Destinations"}</span>
               <span className="mx-2 opacity-20">|</span>
-              <span>{params.date ? format(new Date(params.date), "MMMM dd, yyyy") : "All Dates"}</span>
+              <span>{safeFormat(params.date, "MMMM dd, yyyy", "All Dates")}</span>
             </div>
           </div>
         </div>
@@ -83,72 +90,80 @@ export default async function SearchPage({
 
       {/* Results List */}
       <div className="grid gap-6">
-        {schedules.map((schedule) => (
-          <div key={schedule.id} className="reveal-up scroll-reveal group relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/0 to-accent/0 rounded-3xl blur opacity-0 group-hover:opacity-20 group-hover:from-primary group-hover:to-accent transition duration-500" />
-            <Card className="relative glass-darker border-white/5 overflow-hidden rounded-3xl transition-all duration-500 group-hover:border-white/10">
-              <CardContent className="p-8">
-                <div className="grid gap-8 md:grid-cols-[2fr_1fr_1fr_auto] items-center">
-                  
-                  {/* Bus Info */}
-                  <div className="flex items-start gap-4">
-                    <div className="size-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-primary/10 transition-colors">
-                      <Bus className="size-7 text-primary" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
-                          {schedule.bus?.name ?? "Fleet"}
-                        </h3>
-                        <Badge variant="outline" className="text-[10px] border-white/10 text-white/40 uppercase">
-                          {schedule.bus?.bus_type}
-                        </Badge>
+        {schedules.map((schedule) => {
+          const depDate = new Date(schedule.departure_time);
+          const arrDate = new Date(schedule.arrival_time);
+          const duration = !isNaN(depDate.getTime()) && !isNaN(arrDate.getTime()) 
+            ? ((Math.round((+arrDate - +depDate) / 60000 / 6) / 10).toFixed(1)) 
+            : "N/A";
+
+          return (
+            <div key={schedule.id} className="reveal-up scroll-reveal group relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/0 to-accent/0 rounded-3xl blur opacity-0 group-hover:opacity-20 group-hover:from-primary group-hover:to-accent transition duration-500" />
+              <Card className="relative glass-darker border-white/5 overflow-hidden rounded-3xl transition-all duration-500 group-hover:border-white/10">
+                <CardContent className="p-8">
+                  <div className="grid gap-8 md:grid-cols-[2fr_1fr_1fr_auto] items-center">
+                    
+                    {/* Bus Info */}
+                    <div className="flex items-start gap-4">
+                      <div className="size-14 rounded-2xl bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:bg-primary/10 transition-colors">
+                        <Bus className="size-7 text-primary" />
                       </div>
-                      <p className="text-white/30 text-sm flex items-center gap-2">
-                        <MapPin className="size-3" />
-                        ID: {schedule.bus?.bus_number} • {schedule.bus?.amenities?.slice(0, 2).join(" • ")}
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-xl font-bold group-hover:text-primary transition-colors">
+                            {schedule.bus?.name ?? "Premium Fleet"}
+                          </h3>
+                          <Badge variant="outline" className="text-[10px] border-white/10 text-white/40 uppercase">
+                            {schedule.bus?.bus_type ?? "Express"}
+                          </Badge>
+                        </div>
+                        <p className="text-white/30 text-sm flex items-center gap-2">
+                          <MapPin className="size-3" />
+                          ID: {schedule.bus?.bus_number ?? "T-800"} • {schedule.bus?.amenities?.slice(0, 2).join(" • ") ?? "Elite Services"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Journey Info */}
+                    <div className="space-y-1">
+                      <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Departure</p>
+                      <div className="flex items-center gap-2">
+                        <Clock className="size-4 text-accent" />
+                        <p className="text-lg font-semibold">{safeFormat(schedule.departure_time, "hh:mm a")}</p>
+                      </div>
+                      <p className="text-white/40 text-sm italic">{safeFormat(schedule.departure_time, "dd MMM")}</p>
+                    </div>
+
+                    {/* Fair Info */}
+                    <div className="space-y-1">
+                      <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Base Fair</p>
+                      <div className="flex items-center gap-1">
+                        <IndianRupee className="size-5 text-primary" />
+                        <p className="text-3xl font-bold text-white">{schedule.base_price}</p>
+                      </div>
+                      <p className="text-white/40 text-xs">
+                        {duration}h duration
                       </p>
                     </div>
-                  </div>
 
-                  {/* Journey Info */}
-                  <div className="space-y-1">
-                    <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Departure</p>
-                    <div className="flex items-center gap-2">
-                      <Clock className="size-4 text-accent" />
-                      <p className="text-lg font-semibold">{format(new Date(schedule.departure_time), "hh:mm a")}</p>
+                    {/* Actions */}
+                    <div className="text-right">
+                      <p className="text-xs text-accent font-bold mb-4 uppercase tracking-tighter">
+                        {schedule.available_seats_estimate ?? schedule.bus?.total_seats ?? 0} elite seats left
+                      </p>
+                      <Link href={`/schedules/${schedule.id}`}>
+                        <Button variant="premium" size="lg" className="px-8 shadow-xl">
+                          Select Seat
+                        </Button>
+                      </Link>
                     </div>
-                    <p className="text-white/40 text-sm italic">{format(new Date(schedule.departure_time), "dd MMM")}</p>
                   </div>
-
-                  {/* Fair Info */}
-                  <div className="space-y-1">
-                    <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Base Fair</p>
-                    <div className="flex items-center gap-1">
-                      <IndianRupee className="size-5 text-primary" />
-                      <p className="text-3xl font-bold text-white">{schedule.base_price}</p>
-                    </div>
-                    <p className="text-white/40 text-xs">
-                      {(Math.round((+new Date(schedule.arrival_time) - +new Date(schedule.departure_time)) / 60000 / 6) / 10).toFixed(1)}h duration
-                    </p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="text-right">
-                    <p className="text-xs text-accent font-bold mb-4 uppercase tracking-tighter">
-                      {schedule.available_seats_estimate ?? schedule.bus?.total_seats ?? 0} elite seats left
-                    </p>
-                    <Link href={`/schedules/${schedule.id}`}>
-                      <Button variant="premium" size="lg" className="px-8 shadow-xl">
-                        Select Seat
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        ))}
+                </CardContent>
+              </Card>
+            </div>
+          );
+        })}
 
         {schedules.length === 0 && (
           <div className="reveal-up py-20 text-center">
