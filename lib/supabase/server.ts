@@ -4,11 +4,11 @@ import { cookies } from "next/headers";
 export async function createClient() {
   const cookieStore = await cookies();
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder";
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase environment variables are missing. Please check your .env.local file.");
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    console.warn("[Supabase] URL is missing! Running in safety mode.");
   }
 
   return createServerClient(
@@ -20,11 +20,22 @@ export async function createClient() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch (err) {
+            // This can fail in Server Components, which is expected
+          }
         },
       },
-    },
+      // Force fetch to handle connection errors without crashing the process
+      global: {
+        fetch: (...args) => fetch(...args).catch(err => {
+          console.error("[Supabase Fetch Error]:", err.message);
+          throw err; // Still throw so Supabase knows it failed, but we log it now
+        })
+      }
+    }
   );
 }

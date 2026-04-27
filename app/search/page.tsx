@@ -13,8 +13,15 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<{ from?: string; to?: string; date?: string }>;
 }) {
-  const params = await searchParams;
-  const schedules = await getSchedules(params);
+  let schedules: any[] = [];
+  try {
+    const params = await searchParams;
+    const result = await getSchedules(params);
+    schedules = Array.isArray(result) ? result : [];
+  } catch (err) {
+    console.error("[Search Page] Failed to initialize schedules:", err);
+    // Continue with empty schedules to prevent full-page crash
+  }
 
   const safeFormat = (dateStr: string | undefined | null, formatStr: string, fallback: string = "N/A") => {
     if (!dateStr) return fallback;

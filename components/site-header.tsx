@@ -5,14 +5,20 @@ import { Button } from "@/components/ui/button";
 import { AccountPanel } from "@/components/account-panel";
 
 export async function SiteHeader() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
   let role: string | null = null;
-  if (user) {
-    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    role = data?.role ?? null;
+  
+  try {
+    const supabase = await createClient();
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    user = authUser;
+    
+    if (user) {
+      const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+      role = data?.role ?? null;
+    }
+  } catch (err) {
+    console.warn("[SiteHeader] Connectivity issue, rendering in guest mode:", err);
   }
 
   return (

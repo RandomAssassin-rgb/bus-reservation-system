@@ -16,35 +16,42 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-    
-    const timeout = setTimeout(() => {
-      const ctx = gsap.context(() => {
-        // Hero Entrance
-        gsap.from(".hero-content > *", {
-          y: 60,
-          opacity: 0,
-          duration: 1.5,
-          stagger: 0.3,
-          ease: "power4.out",
-        });
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      const timeout = setTimeout(() => {
+        const ctx = gsap.context(() => {
+          // Force elements to be visible before animating
+          gsap.set(".hero-content > *", { opacity: 1, y: 0 });
 
-        // Background parallax
-        gsap.to(".parallax-bg", {
-          yPercent: 20,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".hero-section",
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-          }
-        });
-      }, containerRef);
-      return () => ctx.revert();
-    }, 100);
+          // Hero Entrance
+          gsap.from(".hero-content > *", {
+            y: 40,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.2,
+            ease: "power2.out",
+          });
 
-    return () => clearTimeout(timeout);
+          // Background parallax
+          gsap.to(".parallax-bg", {
+            yPercent: 20,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".hero-section",
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            }
+          });
+        }, containerRef);
+        return () => ctx.revert();
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    } catch (err) {
+      console.warn("Home animations bypassed to maintain visibility.");
+    }
   }, []);
 
   return (

@@ -23,9 +23,11 @@ export async function updateSession(request: NextRequest) {
   );
 
   try {
-    await supabase.auth.getUser();
+    // Add a race condition to prevent the middleware from hanging the entire site
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000));
+    await Promise.race([supabase.auth.getUser(), timeout]);
   } catch (err) {
-    console.error("Middleware Auth Sync failed:", err);
+    console.warn("Middleware Auth check bypassed due to network delay or failure.");
   }
   
   return response;

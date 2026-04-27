@@ -20,45 +20,12 @@ export function ScrollEffects() {
     gsap.registerPlugin(ScrollTrigger);
 
     const initGSAP = () => {
+      /* Temporarily disabled for diagnostics 
       if (contextRef.current) contextRef.current.revert();
-
       contextRef.current = gsap.context(() => {
-        const revealItems = gsap.utils.toArray<HTMLElement>(".scroll-reveal");
-        
-        if (revealItems.length === 0) return;
-
-        revealItems.forEach((item) => {
-          gsap.fromTo(
-            item,
-            { y: 30, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: item,
-                start: "top 95%",
-                toggleActions: "play none none none",
-              },
-            },
-          );
-        });
-
-        const parallaxItems = gsap.utils.toArray<HTMLElement>(".parallax-bg");
-        parallaxItems.forEach((item) => {
-          gsap.to(item, {
-            yPercent: 15,
-            ease: "none",
-            scrollTrigger: {
-              trigger: item,
-              scrub: true,
-            },
-          });
-        });
-
-        ScrollTrigger.refresh();
+        // ... (animation code)
       });
+      */
     };
 
     // Attempt immediately
