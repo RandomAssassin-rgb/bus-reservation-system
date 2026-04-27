@@ -84,6 +84,26 @@ export default async function SearchPage({
           </select>
         </div>
 
+        <div className="flex-1 min-w-[150px] space-y-2">
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Launch</label>
+          <input 
+            type="date" 
+            name="date" 
+            defaultValue={params.date ?? ""} 
+            className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all [color-scheme:dark]" 
+          />
+        </div>
+
+        <div className="flex-1 min-w-[150px] space-y-2">
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Conclusion</label>
+          <input 
+            type="date" 
+            name="arrivalDate" 
+            defaultValue={params.arrivalDate ?? ""} 
+            className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all [color-scheme:dark]" 
+          />
+        </div>
+
         <div className="flex-1 min-w-[200px] space-y-2">
           <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Fleet Type</label>
           <select name="busType" defaultValue={(params as { busType?: string }).busType ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
