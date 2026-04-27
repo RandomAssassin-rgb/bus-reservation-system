@@ -19,76 +19,57 @@ export function ScrollEffects() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // 1. Kill any existing context before starting new one
-    if (contextRef.current) {
-      contextRef.current.revert();
-    }
+    const initGSAP = () => {
+      if (contextRef.current) contextRef.current.revert();
 
-    // 2. Small delay to let the DOM settle after Next.js transition
-    const timeout = setTimeout(() => {
       contextRef.current = gsap.context(() => {
-        // Fade reveal up
         const revealItems = gsap.utils.toArray<HTMLElement>(".scroll-reveal");
+        
+        if (revealItems.length === 0) return;
+
         revealItems.forEach((item) => {
           gsap.fromTo(
             item,
-            { y: 50, opacity: 0 },
+            { y: 30, opacity: 0 },
             {
               y: 0,
               opacity: 1,
-              duration: 1.2,
-              ease: "power4.out",
+              duration: 1,
+              ease: "power3.out",
               scrollTrigger: {
                 trigger: item,
-                start: "top 90%",
+                start: "top 95%",
                 toggleActions: "play none none none",
               },
             },
           );
         });
 
-        // Parallax background
         const parallaxItems = gsap.utils.toArray<HTMLElement>(".parallax-bg");
         parallaxItems.forEach((item) => {
-          gsap.fromTo(item, 
-            { yPercent: -10 },
-            {
-              yPercent: 10,
-              ease: "none",
-              scrollTrigger: {
-                trigger: item,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: true,
-              },
-            }
-          );
-        });
-
-        // Magnet effect for elite buttons
-        const magnetButtons = gsap.utils.toArray<HTMLElement>(".btn-premium");
-        magnetButtons.forEach((btn) => {
-          btn.addEventListener("mousemove", (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            gsap.to(btn, { x: x * 0.2, y: y * 0.2, duration: 0.3 });
-          });
-          btn.addEventListener("mouseleave", () => {
-            gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+          gsap.to(item, {
+            yPercent: 15,
+            ease: "none",
+            scrollTrigger: {
+              trigger: item,
+              scrub: true,
+            },
           });
         });
 
-        // Force a global refresh for ScrollTrigger
         ScrollTrigger.refresh();
-      }); 
-    }, 100);
+      });
+    };
+
+    // Attempt immediately
+    initGSAP();
+
+    // Watchdog: If elements haven't appeared yet, try again in 500ms
+    const watchdog = setTimeout(initGSAP, 500);
 
     return () => {
-      clearTimeout(timeout);
-      if (contextRef.current) {
-        contextRef.current.revert();
-      }
+      clearTimeout(watchdog);
+      if (contextRef.current) contextRef.current.revert();
     };
   }, [mounted, pathname]);
 

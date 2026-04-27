@@ -116,29 +116,15 @@
 
   .scroll-reveal {
     opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(20px);
+    /* Evergreen Safety: If GSAP fails, reveal automatically after 1.5s */
+    animation: safety-fade-in 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 1.5s;
   }
+}
 
-  .scroll-reveal.active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .parallax-section {
-    position: relative;
-    overflow: hidden;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .floating-island {
-    @apply fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-3rem)] max-w-7xl;
-    @apply bg-card backdrop-blur-xl border border-white/5 h-20 rounded-[2.5rem] px-10 flex items-center justify-between;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  }
+@keyframes safety-fade-in {
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Base Body enhancement */
@@ -146,6 +132,7 @@ body {
   overflow-x: hidden;
   background: var(--background);
 }
+
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
