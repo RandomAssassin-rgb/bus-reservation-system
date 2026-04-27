@@ -14,13 +14,14 @@ export default async function SearchPage({
   searchParams: Promise<{ from?: string; to?: string; date?: string }>;
 }) {
   let schedules: any[] = [];
+  let params: any = {};
+  
   try {
-    const params = await searchParams;
+    params = await searchParams;
     const result = await getSchedules(params);
     schedules = Array.isArray(result) ? result : [];
   } catch (err) {
     console.error("[Search Page] Failed to initialize schedules:", err);
-    // Continue with empty schedules to prevent full-page crash
   }
 
   const safeFormat = (dateStr: string | undefined | null, formatStr: string, fallback: string = "N/A") => {
@@ -179,9 +180,11 @@ export default async function SearchPage({
             </div>
             <h3 className="text-2xl font-bold mb-2">No expeditions found</h3>
             <p className="text-white/40">Try adjusting your filters or search for another date.</p>
-            <Button variant="outline" className="mt-8 border-white/5" onClick={() => window.location.href='/search'}>
-              Reset All Filters
-            </Button>
+            <Link href="/search">
+              <Button variant="outline" className="mt-8 border-white/5">
+                Reset All Filters
+              </Button>
+            </Link>
           </div>
         )}
       </div>
