@@ -24,18 +24,26 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options);
             });
-          } catch (err) {
-            // This can fail in Server Components, which is expected
-          }
+          } catch (err) {}
         },
       },
-      // Force fetch to handle connection errors without crashing the process
       global: {
-        fetch: (...args) => fetch(...args).catch(err => {
-          console.error("[Supabase Fetch Error]:", err.message);
-          throw err; // Still throw so Supabase knows it failed, but we log it now
-        })
+        fetch: async (url, options) => {
+          return fetch(url, {
+            ...options,
+            // Override the signals to prevent hanging fetches
+            signal: options?.signal || AbortSignal.timeout(10000), 
+          }).catch(err => {
+            console.error("DEBUG: Global Supabase Fetch Failed!", {
+              url,
+              error: err.message,
+              stack: err.stack?.split("\n")[0]
+            });
+            throw err;
+          });
+        }
       }
     }
   );
 }
+

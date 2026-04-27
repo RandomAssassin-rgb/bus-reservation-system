@@ -19,6 +19,17 @@ export async function updateSession(request: NextRequest) {
           });
         },
       },
+      global: {
+        fetch: async (url, options) => {
+          return fetch(url, {
+            ...options,
+            signal: options?.signal || AbortSignal.timeout(5000),
+          }).catch((err) => {
+            console.error("MIDDLEWARE FETCH FAILURE:", err.message);
+            throw err;
+          });
+        },
+      },
     },
   );
 
