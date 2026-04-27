@@ -61,33 +61,34 @@ export default async function SearchPage({
         <div className="flex-1 min-w-[200px] space-y-2">
           <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Fleet Type</label>
           <select name="busType" defaultValue={(params as { busType?: string }).busType ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
-            <option value="">All Fleets</option>
-            <option value="AC">Premium AC</option>
-            <option value="Non-AC">Standard Non-AC</option>
-            <option value="Sleeper">Executive Sleeper</option>
-            <option value="Semi-Sleeper">Comfort Semi-Sleeper</option>
+            <option value="" className="bg-zinc-900 text-white">All Fleets</option>
+            <option value="AC" className="bg-zinc-900 text-white">Premium AC</option>
+            <option value="Non-AC" className="bg-zinc-900 text-white">Standard Non-AC</option>
+            <option value="Sleeper" className="bg-zinc-900 text-white">Executive Sleeper</option>
+            <option value="Semi-Sleeper" className="bg-zinc-900 text-white">Comfort Semi-Sleeper</option>
           </select>
         </div>
         
         <div className="flex-1 min-w-[150px] space-y-2">
           <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Departure Slot</label>
           <select name="departure" defaultValue={(params as { departure?: string }).departure ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
-            <option value="">Any Time</option>
-            <option value="morning">Morning (6AM - 12PM)</option>
-            <option value="afternoon">Afternoon (12PM - 6PM)</option>
-            <option value="evening">Evening (6PM - 10PM)</option>
-            <option value="night">Night (10PM - 6AM)</option>
+            <option value="" className="bg-zinc-900 text-white">Any Time</option>
+            <option value="morning" className="bg-zinc-900 text-white">Morning (6AM - 12PM)</option>
+            <option value="afternoon" className="bg-zinc-900 text-white">Afternoon (12PM - 6PM)</option>
+            <option value="evening" className="bg-zinc-900 text-white">Evening (6PM - 10PM)</option>
+            <option value="night" className="bg-zinc-900 text-white">Night (10PM - 6AM)</option>
           </select>
         </div>
 
         <div className="w-[180px] space-y-2">
           <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Sort By</label>
           <select name="sort" defaultValue={(params as { sort?: string }).sort ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
-            <option value="">Sort Options</option>
-            <option value="lowest_price">Lowest Fair</option>
-            <option value="earliest_departure">Early Birds</option>
-            <option value="shortest_duration">Fastest Route</option>
+            <option value="" className="bg-zinc-900 text-white">Sort Options</option>
+            <option value="lowest_price" className="bg-zinc-900 text-white">Lowest Fair</option>
+            <option value="earliest_departure" className="bg-zinc-900 text-white">Early Birds</option>
+            <option value="shortest_duration" className="bg-zinc-900 text-white">Fastest Route</option>
           </select>
+
         </div>
 
         <Button type="submit" variant="premium" className="h-12 px-8 rounded-2xl">
