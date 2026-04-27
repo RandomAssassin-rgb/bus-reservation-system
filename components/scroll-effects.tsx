@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,6 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 export function ScrollEffects() {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const contextRef = useRef<gsap.Context | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -18,10 +19,14 @@ export function ScrollEffects() {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    // Yield to the browser to ensure React 18 completes full DOM hydration
-    // before GSAP starts injecting style properties into the DOM.
+    // 1. Kill any existing context before starting new one
+    if (contextRef.current) {
+      contextRef.current.revert();
+    }
+
+    // 2. Small delay to let the DOM settle after Next.js transition
     const timeout = setTimeout(() => {
-      let ctx = gsap.context(() => {
+      contextRef.current = gsap.context(() => {
         // Fade reveal up
         const revealItems = gsap.utils.toArray<HTMLElement>(".scroll-reveal");
         revealItems.forEach((item) => {
@@ -73,15 +78,17 @@ export function ScrollEffects() {
             gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
           });
         });
-      }); // End of gsap.context
 
-      return () => {
-        ctx.revert();
-      };
-    }, 150);
+        // Force a global refresh for ScrollTrigger
+        ScrollTrigger.refresh();
+      }); 
+    }, 100);
 
     return () => {
       clearTimeout(timeout);
+      if (contextRef.current) {
+        contextRef.current.revert();
+      }
     };
   }, [mounted, pathname]);
 
