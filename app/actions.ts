@@ -16,48 +16,61 @@ async function ensureAdmin() {
 }
 
 export async function signUp(formData: FormData) {
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
-  const fullName = String(formData.get("full_name") || "");
+  try {
+    const email = String(formData.get("email") || "");
+    const password = String(formData.get("password") || "");
+    const fullName = String(formData.get("full_name") || "");
 
-  if (!/^\S+@\S+\.\S+$/.test(email)) {
-    redirect("/auth/signup?error=Please%20enter%20a%20valid%20email%20address.");
-  }
-  if (password.length < 6) {
-    redirect("/auth/signup?error=Password%20must%20be%20at%20least%206%20characters.");
-  }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      redirect("/auth/signup?error=Please%20enter%20a%20valid%20email%20address.");
+    }
+    if (password.length < 6) {
+      redirect("/auth/signup?error=Password%20must%20be%20at%20least%206%20characters.");
+    }
 
-  const supabase = await createClient();
-  const headerList = await (await import("next/headers")).headers();
-  const origin = headerList.get("origin") || "";
+    const supabase = await createClient();
+    const headersList = await (await import("next/headers")).headers();
+    const origin = headersList.get("origin") || "";
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
-      data: {
-        full_name: fullName,
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${origin}/auth/callback`,
+        data: {
+          full_name: fullName,
+        },
       },
-    },
-  });
-  if (error) {
-    redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
+    });
+
+    if (error) {
+      redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
+    }
+    redirect("/auth/login?success=Account%20created.%20Please%20check%20your%20email%20to%20confirm%20your%20account.");
+  } catch (err: any) {
+    if (err.message === "NEXT_REDIRECT") throw err;
+    console.error("Critical Signup Error:", err);
+    redirect("/auth/signup?error=The%20security%20portal%20is%20temporarily%20unreachable.%20Please%20verify%20your%20connection.");
   }
-  redirect("/auth/login?success=Account%20created.%20Please%20check%20your%20email%20to%20confirm%20your%20account.");
 }
 
 export async function signIn(formData: FormData) {
-  const email = String(formData.get("email") || "");
-  const password = String(formData.get("password") || "");
-  if (!/^\S+@\S+\.\S+$/.test(email) || password.length < 6) {
-    redirect("/auth/login?error=Invalid%20email%20or%20password%20format.");
-  }
-  const supabase = await createClient();
+  try {
+    const email = String(formData.get("email") || "");
+    const password = String(formData.get("password") || "");
+    if (!/^\S+@\S+\.\S+$/.test(email) || password.length < 6) {
+      redirect("/auth/login?error=Invalid%20email%20or%20password%20format.");
+    }
+    const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) redirect(`/auth/login?error=${encodeURIComponent(error.message)}`);
-  redirect("/");
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) redirect(`/auth/login?error=${encodeURIComponent(error.message)}`);
+    redirect("/");
+  } catch (err: any) {
+    if (err.message === "NEXT_REDIRECT") throw err;
+    console.error("Critical Login Error:", err);
+    redirect("/auth/login?error=Network%20handshake%20failed.%20Please%20check%20your%20internet%20access.");
+  }
 }
 
 export async function signOut() {
