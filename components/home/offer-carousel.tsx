@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Ticket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 const offers = [
-  { code: "FESTIVE300", title: "Save up to Rs 300 on bus tickets", subtitle: "Valid till 30 Apr · Bus" },
-  { code: "SUPERHIT", title: "Flat discount on popular routes", subtitle: "Valid till 30 Apr · AC buses" },
-  { code: "CASH300", title: "Weekend cashback offer", subtitle: "Valid till 30 Apr · UPI payments" },
-  { code: "HDFC500", title: "Save big with partner banks", subtitle: "Valid till 30 Apr · Cards" },
+  { code: "ELITE300", title: "Elite Member Discount: Save ₹300", subtitle: "Experience luxury for less" },
+  { code: "NIGHTEXP", title: "Premium Sleeper Specials", subtitle: "20% off on overnight routes" },
+  { code: "FIRSTCLASS", title: "Complimentary Flexi-Ticket", subtitle: "Free rescheduling on selected routes" },
 ];
 
 export function OfferCarousel() {
@@ -20,38 +18,53 @@ export function OfferCarousel() {
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % offers.length);
-    }, 3200);
+    }, 4500);
     return () => clearInterval(timer);
   }, []);
 
-  function prev() {
-    setIndex((i) => (i - 1 + offers.length) % offers.length);
-  }
-
-  function next() {
-    setIndex((i) => (i + 1) % offers.length);
-  }
-
   return (
-    <div className="reveal-up premium-card relative overflow-hidden border border-[#ececec] bg-gradient-to-r from-[#fff3df] to-[#ffe9e9] p-0">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.6),transparent_45%)]" />
-      <Card className="border-0 bg-transparent shadow-none">
-        <CardContent className="relative flex items-center justify-between gap-3 p-5">
-          <Button size="icon-sm" variant="ghost" onClick={prev} className="rounded-full">
+    <div className="relative group overflow-hidden rounded-2xl bg-white/5 border border-white/5 p-6 backdrop-blur-sm">
+      <div className="absolute top-0 right-0 p-4 opacity-10">
+        <Ticket className="size-20 -rotate-12" />
+      </div>
+      
+      <div className="relative flex items-center justify-between">
+        <div className="min-w-0 flex-1">
+          <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 mb-3 px-3 py-1">Featured Offer</Badge>
+          <h3 className="text-xl font-bold text-white tracking-tight leading-tight">{current.title}</h3>
+          <p className="mt-2 text-sm text-white/40">
+            {current.subtitle} • Use code <span className="text-primary font-mono font-bold tracking-widest">{current.code}</span>
+          </p>
+        </div>
+        
+        <div className="flex gap-1 ml-4 self-end">
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            onClick={() => setIndex((i) => (i - 1 + offers.length) % offers.length)} 
+            className="size-8 rounded-full border border-white/5 hover:bg-white/10"
+          >
             <ChevronLeft className="size-4" />
           </Button>
-          <div className="min-w-0 flex-1 text-center">
-            <Badge className="bg-zinc-800 text-[10px]">Bus</Badge>
-            <p className="mt-2 text-sm font-semibold text-zinc-900">{current.title}</p>
-            <p className="mt-1 text-xs text-zinc-500">
-              {current.subtitle} · code <span className="font-semibold">{current.code}</span>
-            </p>
-          </div>
-          <Button size="icon-sm" variant="ghost" onClick={next} className="rounded-full">
+          <Button 
+            size="icon" 
+            variant="ghost" 
+            onClick={() => setIndex((i) => (i + 1) % offers.length)} 
+            className="size-8 rounded-full border border-white/5 hover:bg-white/10"
+          >
             <ChevronRight className="size-4" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      <div className="flex gap-1 mt-6">
+        {offers.map((_, i) => (
+          <div 
+            key={i} 
+            className={`h-1 rounded-full transition-all duration-500 ${i === index ? "w-8 bg-primary" : "w-1.5 bg-white/10"}`} 
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,212 +1,221 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { StickySearch } from "@/components/home/sticky-search";
 import { OfferCarousel } from "@/components/home/offer-carousel";
 import { RouteChips } from "@/components/home/route-chips";
+import { BusFront, Sparkles, ShieldCheck, ArrowRight, Zap } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const timeout = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Hero Entrance
+        gsap.from(".hero-content > *", {
+          y: 60,
+          opacity: 0,
+          duration: 1.5,
+          stagger: 0.3,
+          ease: "power4.out",
+        });
+
+        // Background parallax
+        gsap.to(".parallax-bg", {
+          yPercent: 20,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          }
+        });
+      }, containerRef);
+      return () => ctx.revert();
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
-    <main className="flex-1 bg-[#f7f7f7] pb-16">
-      <StickySearch />
-      <section className="premium-gradient relative overflow-hidden px-4 pb-20 pt-14 text-white">
-        <div className="mx-auto max-w-6xl">
-          <h1 className="reveal-up max-w-2xl text-4xl font-bold leading-tight text-white md:text-5xl">Travel smarter with seamless bus bookings across trusted operators.</h1>
-          <p className="reveal-up mt-4 max-w-xl text-base text-white/95 md:text-lg">
-            Compare routes, pick the right seat, and manage every trip from one premium booking experience.
-          </p>
-          <form id="hero-search-anchor" action="/search" className="reveal-up mt-10 rounded-3xl bg-white p-3 text-zinc-900 shadow-2xl">
-            <div className="grid gap-2 md:grid-cols-[1fr_1fr_200px_170px]">
-              <Input name="from" placeholder="From" className="h-14 rounded-2xl border-zinc-200" required />
-              <Input name="to" placeholder="To" className="h-14 rounded-2xl border-zinc-200" required />
-              <Input name="date" type="date" className="h-14 rounded-2xl border-zinc-200" required />
-              <Button type="submit" className="h-14 rounded-2xl bg-[#d84e55] text-base hover:bg-[#c63f46]">
-                Search buses
+    <div ref={containerRef} className="relative min-h-screen bg-background">
+      {/* Cinematic Hero Section - Spans Full Screen */}
+      <section className="hero-section relative h-[100vh] w-full flex items-center justify-center overflow-hidden">
+        {/* Background Layers */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=2400&q=80"
+            alt="Premium Bus"
+            fill
+            className="object-cover opacity-50 scale-110 parallax-bg"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-transparent to-background opacity-80" />
+          
+          {/* Animated Glow Orbs */}
+          <div className="absolute top-1/4 left-1/4 size-[600px] bg-primary/10 rounded-full blur-[180px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 size-[500px] bg-accent/5 rounded-full blur-[150px] animate-pulse [animation-delay:2s]" />
+        </div>
+
+        {/* Hero Content */}
+        <div className="hero-content relative z-10 w-full max-w-[1400px] px-8 text-center space-y-12">
+          <div className="space-y-8">
+            <Badge variant="premium" className="px-6 py-2 text-sm rounded-full tracking-[0.3em] uppercase italic bg-white/5 border-white/10 text-primary">
+              <Sparkles className="mr-2 size-4 fill-primary" /> The Zenith of Bus Travel
+            </Badge>
+            <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.8] text-white italic uppercase italic">
+              Expedition<br />
+              <span className="premium-gradient-text">Without Limits</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-white/40 max-w-2xl mx-auto font-medium leading-relaxed italic">
+              Experience the nation&apos;s most elite fleet of luxury coaches. 
+              Designed for the distinguished explorer.
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 pt-8">
+            <Link href="/search">
+              <Button size="lg" className="h-[90px] px-16 rounded-[2.5rem] text-2xl font-bold btn-premium shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] bg-primary hover:bg-primary/90 transition-all">
+                Find Expedition <ArrowRight className="ml-3 size-8" />
               </Button>
+            </Link>
+            <Link href="/offers">
+              <Button variant="outline" size="lg" className="h-[90px] px-16 rounded-[2.5rem] text-2xl font-bold bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-white/70">
+                Member Benefits
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Cinematic Scroll Indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/20">
+           <p className="text-[10px] font-bold uppercase tracking-[0.4em]">Scroll to Explore</p>
+           <div className="w-[1px] h-20 bg-gradient-to-b from-white/20 to-transparent" />
+        </div>
+      </section>
+
+      {/* Floating Island Search - Overlays Transition */}
+      <div className="relative z-30 -mt-20 px-8">
+        <StickySearch />
+      </div>
+
+      {/* Main Content Area */}
+      <section className="py-40 px-8 max-w-[1500px] mx-auto space-y-48">
+        
+        {/* Featured Routes Section */}
+        <div className="space-y-16">
+          <div className="scroll-reveal flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12">
+            <div className="space-y-4">
+              <p className="text-primary text-sm font-bold uppercase tracking-[0.4em]">Strategic Corridors</p>
+              <h2 className="text-6xl font-black text-white tracking-tighter italic uppercase">Premier Schedules</h2>
             </div>
-          </form>
-        </div>
-      </section>
-
-      <section className="mx-auto -mt-12 grid max-w-6xl gap-4 px-4 md:grid-cols-2">
-        <OfferCarousel />
-        <div className="reveal-up premium-card border border-[#ececec] bg-white p-6">
-          <p className="text-lg font-semibold text-zinc-900">Smart savings</p>
-          <p className="mt-2 text-base text-zinc-600">Get dynamic pricing insights before checkout and book at the right time.</p>
-          <div className="mt-4 flex gap-2">
-            <Badge className="bg-zinc-800">Best fare alerts</Badge>
-            <Badge variant="secondary">Operator deals</Badge>
+            <RouteChips />
+          </div>
+          
+          <div className="scroll-reveal grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              { from: "Kolkata", to: "Durgapur", time: "06:00 AM", price: "799", img: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80" },
+              { from: "Mumbai", to: "Pune", time: "09:30 AM", price: "999", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" },
+              { from: "Delhi", to: "Jaipur", time: "11:00 PM", price: "1499", img: "https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?auto=format&fit=crop&w=800&q=80" },
+            ].map((route, i) => (
+              <div key={i} className="group relative h-[500px] rounded-[3rem] overflow-hidden glass-dark border border-white/5 hover:border-primary/20 transition-all duration-700">
+                <Image src={route.img} alt={route.to} fill className="object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+                <div className="absolute inset-0 p-10 flex flex-col justify-end">
+                   <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{route.time} • Daily</p>
+                   <h3 className="text-4xl font-black text-white italic mb-1 uppercase tracking-tighter">{route.from} → {route.to}</h3>
+                   <div className="flex items-center justify-between mt-6">
+                      <p className="text-2xl font-bold text-primary">₹{route.price}</p>
+                      <Link href="/search">
+                        <Button variant="ghost" className="rounded-xl px-6 text-xs font-bold uppercase hover:bg-primary/20">Secure Seat</Button>
+                      </Link>
+                   </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
 
-      <section className="mx-auto mt-8 grid max-w-6xl gap-4 px-4 md:grid-cols-4">
-        {[
-          { title: "4,500+", value: "Routes active", desc: "Daily departures across major cities." },
-          { title: "900+", value: "Bus partners", desc: "Private and government operators." },
-          { title: "24/7", value: "Support desk", desc: "Round-the-clock help for trips." },
-          { title: "99.9%", value: "Payment uptime", desc: "Reliable booking and confirmations." },
-        ].map((item) => (
-          <Card key={item.value} className="reveal-up rounded-2xl border border-zinc-200 bg-white">
-            <CardContent className="p-5">
-              <p className="text-2xl font-bold text-[#d84e55]">{item.title}</p>
-              <p className="mt-1 text-base font-medium text-zinc-900">{item.value}</p>
-              <p className="mt-1 text-sm text-zinc-500">{item.desc}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
-
-      <section className="mx-auto mt-8 max-w-6xl px-4">
-        <RouteChips />
-      </section>
-
-      <section className="mx-auto mt-10 max-w-6xl px-4">
-        <h2 className="text-3xl font-bold text-zinc-900">What&apos;s new</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-4">
-          {["Free Cancellation", "Bus timetable", "Flexi Ticket", "Assurance Program"].map((item) => (
-            <Card key={item} className="reveal-up rounded-2xl border border-[#e8e8e8] bg-white shadow-sm">
-              <CardContent className="p-5">
-                <h3 className="font-semibold">{item}</h3>
-                <p className="mt-2 text-base text-zinc-600">Know more about features designed for stress-free travel.</p>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Tech Showcase Section */}
+        <div className="scroll-reveal glass-dark border-white/5 rounded-[4rem] overflow-hidden grid lg:grid-cols-2 shadow-2xl">
+           <div className="p-20 space-y-12">
+              <div className="size-20 rounded-[2.5rem] bg-accent/20 flex items-center justify-center border border-accent/20">
+                <Zap className="size-10 text-accent" />
+              </div>
+              <div className="space-y-6">
+                <h3 className="text-7xl font-black text-white tracking-tighter uppercase italic leading-[0.8]">Peak Performance<br /><span className="text-accent underline decoration-white/10">Orchestrated.</span></h3>
+                <p className="text-2xl text-white/30 leading-relaxed max-w-md font-medium italic">Our proprietary transit engine ensures the most efficient journey paths across the subcontinent.</p>
+              </div>
+              <ul className="space-y-8">
+                {[
+                  "On-board Luxury Concierge",
+                  "Climate-Optimized Cabins",
+                  "Zero-Detour Express Paths",
+                  "Verified Fleet Operators"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-6 text-white text-xl font-bold group">
+                    <div className="size-3 rounded-full bg-accent animate-pulse" /> {item}
+                  </li>
+                ))}
+              </ul>
+           </div>
+           <div className="relative h-[700px] lg:h-auto overflow-hidden">
+              <Image 
+                src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1600&q=80"
+                alt="Onboard experience"
+                fill
+                className="object-cover scale-110 hover:scale-100 transition-transform duration-1000"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-background/20 to-background" />
+           </div>
         </div>
-      </section>
 
-      <section className="mx-auto mt-10 max-w-6xl rounded-2xl border border-zinc-200 bg-white/95 px-8 py-10 shadow-sm backdrop-blur">
-        <h2 className="text-3xl font-bold text-zinc-900">Why travelers choose TransitFlow</h2>
-        <ul className="mt-4 list-disc space-y-2 pl-5 text-zinc-700">
-          <li>Free Cancellation and flexible ticket options.</li>
-          <li>Live bus tracking, operator ratings, and trusted service badges.</li>
-          <li>Secure checkout with payment status tracking and booking history.</li>
-        </ul>
-        <div className="mt-6 flex gap-3">
-          <Link href="/search">
-            <Button className="bg-[#d84e55] hover:bg-[#c63f46]">Book now</Button>
-          </Link>
-          <Link href="/my-bookings">
-            <Button variant="outline">My bookings</Button>
-          </Link>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-10 grid max-w-6xl gap-6 px-4 md:grid-cols-2">
-        <div className="premium-card reveal-up overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1400&q=80"
-            alt="Luxury bus travel"
-            width={1200}
-            height={400}
-            className="parallax-bg h-64 w-full object-cover"
-          />
-          <div className="p-6">
-            <h3 className="text-2xl font-semibold">Government & private buses</h3>
-            <p className="mt-2 text-zinc-600">Compare timings, amenities, and prices from multiple operators in one place.</p>
+        {/* Privilege Program Carousel */}
+        <div className="space-y-16">
+          <div className="text-center space-y-4">
+             <p className="text-accent text-sm font-bold uppercase tracking-[0.4em]">Distinguished Benefits</p>
+             <h2 className="text-7xl font-black text-white tracking-tighter italic uppercase">The Privilege Deck</h2>
+          </div>
+          <div className="scroll-reveal">
+             <OfferCarousel />
           </div>
         </div>
-        <div className="premium-card reveal-up overflow-hidden">
-          <Image
-            src="https://images.unsplash.com/photo-1465447142348-e9952c393450?auto=format&fit=crop&w=1400&q=80"
-            alt="Mobile travel booking"
-            width={1200}
-            height={400}
-            className="parallax-bg h-64 w-full object-cover"
-          />
-          <div className="p-6">
-            <h3 className="text-2xl font-semibold">Book instantly on any device</h3>
-            <p className="mt-2 text-zinc-600">Fast checkout, clear itinerary, and real-time booking status on every reservation.</p>
-          </div>
-        </div>
+
       </section>
 
-      <section className="mx-auto mt-10 max-w-6xl px-4">
-        <h2 className="text-3xl font-bold text-zinc-900">Top routes this week</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {[
-            { route: "Kolkata → Durgapur", price: "Starts at INR 499", time: "6h avg duration" },
-            { route: "Delhi → Jaipur", price: "Starts at INR 599", time: "5h avg duration" },
-            { route: "Bangalore → Chennai", price: "Starts at INR 699", time: "7h avg duration" },
-          ].map((item) => (
-            <Card key={item.route} className="reveal-up premium-card">
-              <CardContent className="p-6">
-                <p className="text-lg font-semibold">{item.route}</p>
-                <p className="mt-2 text-base text-zinc-600">{item.time}</p>
-                <p className="mt-3 font-semibold text-[#d84e55]">{item.price}</p>
-                <Link href="/search">
-                  <Button variant="outline" className="mt-4 w-full">
-                    Check schedules
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Epic Footer Banner */}
+      <section className="scroll-reveal relative h-[600px] w-full overflow-hidden flex items-center justify-center text-center">
+        <Image 
+          src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=2400&q=80"
+          alt="Luxury travel background"
+          fill
+          className="object-cover brightness-50 parallax-bg"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
+        <div className="relative z-10 space-y-10 px-8">
+           <h2 className="text-8xl md:text-[10rem] font-black text-white italic uppercase tracking-tighter leading-[0.8] opacity-20">UNLIMITED</h2>
+           <div className="space-y-4">
+             <h2 className="text-6xl font-black text-white italic uppercase tracking-tighter">Beyond the Horizon</h2>
+             <p className="text-2xl text-white/40 max-w-2xl mx-auto font-medium italic">Join the global elite who demand more from their surface expeditions.</p>
+           </div>
+           <Link href="/auth/signup">
+             <Button variant="premium" className="h-20 px-16 rounded-[2rem] text-xl font-black uppercase tracking-[0.2em] shadow-[0_30px_70px_rgba(var(--primary-rgb),0.5)]">
+               Apply for Elite Access
+             </Button>
+           </Link>
         </div>
       </section>
-
-      <section className="mx-auto mt-10 max-w-6xl px-4">
-        <h2 className="text-3xl font-bold text-zinc-900">What customers say</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {[
-            "Clean buses, smooth boarding, and quick confirmations every time.",
-            "Seat map and payment status tracking made planning very easy.",
-            "Best part is having route options and support in one place.",
-          ].map((quote, idx) => (
-            <Card key={quote} className="reveal-up rounded-2xl border border-zinc-200 bg-white">
-              <CardContent className="p-6">
-                <p className="text-zinc-700">&quot;{quote}&quot;</p>
-                <p className="mt-4 text-base font-medium text-zinc-900">Traveler #{idx + 1}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto mt-10 max-w-6xl px-4">
-        <div className="reveal-up premium-card premium-gradient overflow-hidden px-8 py-10 text-white">
-          <div className="grid items-center gap-6 md:grid-cols-[1fr_auto]">
-            <div>
-              <h2 className="text-3xl font-bold">Plan, book, and track every ride with TransitFlow</h2>
-              <p className="mt-2 max-w-2xl text-white/90">
-                Built for modern travel workflows with booking history, payment visibility, and admin-ready operations.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Link href="/search">
-                <Button className="bg-[#d84e55] hover:bg-[#c63f46]">Search buses</Button>
-              </Link>
-              <Link href="/auth/signup">
-                <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                  Create account
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-10 max-w-6xl px-4">
-        <h2 className="text-3xl font-bold text-zinc-900">Frequently asked questions</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {[
-            ["Can I cancel or reschedule my trip?", "Yes, available schedules support cancellation and rescheduling policies based on operator rules."],
-            ["How do I track payment status?", "Every reservation includes payment status in your My Bookings page and admin payment panel."],
-            ["Do you support seat selection?", "Yes, you can pick available seats directly from the seat map before confirming a booking."],
-            ["Can I manage operations as admin?", "Yes, admins can manage buses, routes, drivers, schedules, reservations, and payments."],
-          ].map(([q, a]) => (
-            <Card key={q} className="reveal-up rounded-2xl border border-zinc-200 bg-white">
-              <CardContent className="p-6">
-                <p className="font-semibold">{q}</p>
-                <p className="mt-2 text-base text-zinc-600">{a}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-    </main>
+    </div>
   );
 }

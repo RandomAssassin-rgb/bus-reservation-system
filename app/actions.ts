@@ -18,19 +18,33 @@ async function ensureAdmin() {
 export async function signUp(formData: FormData) {
   const email = String(formData.get("email") || "");
   const password = String(formData.get("password") || "");
+  const fullName = String(formData.get("full_name") || "");
+
   if (!/^\S+@\S+\.\S+$/.test(email)) {
     redirect("/auth/signup?error=Please%20enter%20a%20valid%20email%20address.");
   }
   if (password.length < 6) {
     redirect("/auth/signup?error=Password%20must%20be%20at%20least%206%20characters.");
   }
-  const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({ email, password });
+  const supabase = await createClient();
+  const headerList = await (await import("next/headers")).headers();
+  const origin = headerList.get("origin") || "";
+
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback`,
+      data: {
+        full_name: fullName,
+      },
+    },
+  });
   if (error) {
     redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
   }
-  redirect("/auth/login?success=Account%20created.%20Please%20login%20to%20continue.");
+  redirect("/auth/login?success=Account%20created.%20Please%20check%20your%20email%20to%20confirm%20your%20account.");
 }
 
 export async function signIn(formData: FormData) {
