@@ -51,7 +51,7 @@ export function AccountPanel({ isAuthenticated }: Props) {
                 </div>
               </div>
               <form action={signOut} className="pt-2">
-                <Button variant="outline" className="w-full border-white/5 text-white/50 hover:text-destructive">
+                <Button type="submit" variant="outline" className="w-full border-white/5 text-white/50 hover:text-destructive">
                   <LogOut className="mr-2 size-4" /> Sign out
                 </Button>
               </form>
