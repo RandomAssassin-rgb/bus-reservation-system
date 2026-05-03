@@ -7,12 +7,12 @@ import { AccountPanel } from "@/components/account-panel";
 export async function SiteHeader() {
   let user = null;
   let role: string | null = null;
-  
+
   try {
     const supabase = await createClient();
     const { data: { user: authUser } } = await supabase.auth.getUser();
     user = authUser;
-    
+
     if (user) {
       const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
       role = data?.role ?? null;
@@ -26,7 +26,7 @@ export async function SiteHeader() {
       {/* Dynamic Glow Line */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-30" />
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-      
+
       <div className="flex items-center gap-12">
         <Link href="/" className="flex items-center gap-4 group/logo">
           <div className="flex size-14 items-center justify-center rounded-[1.5rem] bg-primary shadow-[0_15px_35px_rgba(var(--primary-rgb),0.5)] group-hover/logo:scale-110 transition-all duration-700">
@@ -61,7 +61,7 @@ export async function SiteHeader() {
               </Button>
             </Link>
           )}
-          
+
           <Link href="/help">
             <Button variant="ghost" className="h-12 text-white/30 hover:text-white hover:bg-white/5 rounded-2xl px-6 text-xs font-black uppercase tracking-widest transition-all">
               <CircleHelp className="mr-3 size-4 opacity-50" /> Intel
@@ -78,7 +78,7 @@ export async function SiteHeader() {
         </div>
 
         <div className="h-10 w-[1px] bg-white/5 mx-2 hidden sm:block" />
-        
+
         <AccountPanel isAuthenticated={!!user} />
       </div>
     </header>

@@ -209,12 +209,17 @@ export default function Home() {
           fill
           className="object-cover brightness-50 parallax-bg"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background" />
-        <div className="relative z-10 space-y-10 px-8">
-           <h2 className="text-8xl md:text-[10rem] font-black text-white italic uppercase tracking-tighter leading-[0.8] opacity-20">UNLIMITED</h2>
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background z-0" />
+        
+        {/* Background Watermark */}
+        <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] text-[10rem] md:text-[20rem] font-black text-white italic uppercase tracking-tighter leading-none opacity-5 select-none pointer-events-none z-0">
+          UNLIMITED
+        </h2>
+
+        <div className="relative z-10 space-y-10 px-8 flex flex-col items-center">
            <div className="space-y-4">
-             <h2 className="text-6xl font-black text-white italic uppercase tracking-tighter">Beyond the Horizon</h2>
-             <p className="text-2xl text-white/40 max-w-2xl mx-auto font-medium italic">Join the global elite who demand more from their surface expeditions.</p>
+             <h2 className="text-6xl md:text-8xl font-black text-white italic uppercase tracking-tighter drop-shadow-2xl">Beyond the Horizon</h2>
+             <p className="text-xl md:text-2xl text-white/40 max-w-2xl mx-auto font-medium italic">Join the global elite who demand more from their surface expeditions.</p>
            </div>
            <Link href="/auth/signup">
              <Button variant="premium" className="h-20 px-16 rounded-[2rem] text-xl font-black uppercase tracking-[0.2em] shadow-[0_30px_70px_rgba(var(--primary-rgb),0.5)]">
