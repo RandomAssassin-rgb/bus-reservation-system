@@ -1,7 +1,12 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Copy, Search, ArrowRight, Wallet } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const offers = [
   { code: "ELITE300", title: "Complimentary Upgrade", details: "Receive INR 300 instant credit on your next premium AC or Sleeper reservation." },
@@ -11,10 +16,78 @@ const offers = [
 ];
 
 export default function OffersPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      gsap.registerPlugin(ScrollTrigger);
+      
+      const ctx = gsap.context(() => {
+        // 1. Header Reveal
+        gsap.fromTo(".offers-header > *", 
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: "power3.out", clearProps: "all" }
+        );
+
+        // 2. Staggered Card Reveal
+        gsap.fromTo(".offer-card", 
+          { y: 60, opacity: 0 },
+          { 
+            y: 0, 
+            opacity: 1, 
+            duration: 1, 
+            stagger: 0.2, 
+            ease: "power3.out",
+            clearProps: "all",
+            scrollTrigger: {
+              trigger: ".offers-grid",
+              start: "top 90%",
+            }
+          }
+        );
+
+        // 3. Section Skew (Butter Smooth)
+        let proxy = { skew: 0 },
+            skewSetter = gsap.quickSetter(".scroll-reveal", "skewY", "deg"),
+            clamp = gsap.utils.clamp(-0.5, 0.5);
+
+        ScrollTrigger.create({
+          onUpdate: (self) => {
+            let skew = clamp(self.getVelocity() / -1000);
+            if (Math.abs(skew) > Math.abs(proxy.skew)) {
+              proxy.skew = skew;
+              gsap.to(proxy, {
+                skew: 0,
+                duration: 0.8,
+                ease: "power3",
+                overwrite: true,
+                onUpdate: () => skewSetter(proxy.skew)
+              });
+            }
+          }
+        });
+      }, containerRef);
+
+      return () => ctx.revert();
+    } catch (err) {
+      console.warn("Offers animations bypassed.");
+    }
+  }, []);
+
+  const copyToClipboard = (code: string, e: React.MouseEvent) => {
+    navigator.clipboard.writeText(code);
+    const btn = e.currentTarget as HTMLButtonElement;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<span className="text-accent animate-pulse">Copied!</span>`;
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+    }, 2000);
+  };
+
   return (
-    <main className="mx-auto max-w-7xl px-4 py-24 min-h-screen">
+    <main ref={containerRef} className="mx-auto max-w-7xl px-4 py-24 min-h-screen overflow-hidden">
       {/* Cinematic Header */}
-      <div className="reveal-up scroll-reveal mb-24 flex flex-col md:flex-row md:items-end justify-between gap-10">
+      <div className="offers-header scroll-reveal mb-24 flex flex-col md:flex-row md:items-end justify-between gap-10">
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-accent">
             <Sparkles className="size-5" />
@@ -30,19 +103,19 @@ export default function OffersPage() {
         </div>
         
         <Link href="/search">
-          <Button variant="premium" className="rounded-full h-16 px-10 shadow-2xl uppercase tracking-[0.2em] font-bold text-xs">
+          <Button variant="premium" className="rounded-full h-16 px-10 shadow-2xl uppercase tracking-[0.2em] font-bold text-xs btn-premium">
             <Search className="mr-3 size-5" /> Redeem Now
           </Button>
         </Link>
       </div>
 
       {/* Grid Layout */}
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-2 offers-grid">
         {offers.map((offer, index) => (
-          <div key={offer.code} className="reveal-up scroll-reveal group relative">
+          <div key={offer.code} className="offer-card scroll-reveal group relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/0 to-accent/0 rounded-[3rem] blur opacity-0 group-hover:opacity-20 group-hover:from-primary group-hover:to-accent transition duration-700" />
             
-            <div className="relative glass-dark border border-white/5 rounded-[3rem] p-10 h-full flex flex-col justify-between transition-all duration-500 overflow-hidden group-hover:border-white/10">
+            <div className="relative glass-dark border border-white/5 rounded-[3rem] p-10 h-full flex flex-col justify-between transition-all duration-500 overflow-hidden group-hover:border-white/10 card-lift glass-shine deck-card">
               <div className="absolute top-0 right-0 p-10 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity duration-700">
                 <Wallet className="size-48" />
               </div>
@@ -59,7 +132,11 @@ export default function OffersPage() {
               </div>
 
               <div className="relative z-10 pt-10 mt-10 border-t border-white/5 flex items-center justify-between">
-                <Button variant="ghost" className="text-white/40 hover:text-white uppercase tracking-widest text-[10px] font-bold">
+                <Button 
+                  variant="ghost" 
+                  onClick={(e) => copyToClipboard(offer.code, e)}
+                  className="text-white/40 hover:text-white uppercase tracking-widest text-[10px] font-bold"
+                >
                   <Copy className="mr-2 size-4" /> Copy Code
                 </Button>
                 

@@ -21,21 +21,16 @@ export default function Home() {
       
       const timeout = setTimeout(() => {
         const ctx = gsap.context(() => {
-          // Force elements to be visible before animating
-          gsap.set(".hero-content > *", { opacity: 1, y: 0 });
+          // 1. Hero Entrance (Enhanced)
+          gsap.fromTo(".hero-content > *", 
+            { y: 100, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.5, stagger: 0.15, ease: "expo.out", clearProps: "all" }
+          );
 
-          // Hero Entrance
-          gsap.from(".hero-content > *", {
-            y: 40,
-            opacity: 0,
-            duration: 1.2,
-            stagger: 0.2,
-            ease: "power2.out",
-          });
-
-          // Background parallax
+          // 2. Deep Parallax for Hero Background
           gsap.to(".parallax-bg", {
-            yPercent: 20,
+            yPercent: 30,
+            scale: 1.2,
             ease: "none",
             scrollTrigger: {
               trigger: ".hero-section",
@@ -44,6 +39,93 @@ export default function Home() {
               scrub: true,
             }
           });
+
+          // 3. Staggered Reveal for Cards
+          gsap.fromTo(".route-card", 
+            { y: 60, opacity: 0 },
+            { 
+              y: 0, 
+              opacity: 1, 
+              duration: 1, 
+              stagger: 0.2, 
+              ease: "power3.out",
+              clearProps: "all",
+              scrollTrigger: {
+                trigger: ".route-cards-grid",
+                start: "top 90%",
+                toggleActions: "play none none reverse"
+              }
+            }
+          );
+
+          // 4. Image Parallax for Route Cards
+          gsap.utils.toArray(".card-image").forEach((img: any) => {
+            gsap.to(img, {
+              yPercent: 20,
+              ease: "none",
+              scrollTrigger: {
+                trigger: img.parentElement,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              }
+            });
+          });
+
+          // 5. Advanced Watermark Parallax (Opposite Direction)
+          gsap.to(".watermark", {
+            xPercent: -10,
+            opacity: 0.15,
+            scrollTrigger: {
+              trigger: ".watermark",
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+            }
+          });
+
+          // 6. Section Skew on Scroll (Butter Smooth & Safe)
+          let proxy = { skew: 0 },
+              skewSetter = gsap.quickSetter(".scroll-reveal", "skewY", "deg"),
+              clamp = gsap.utils.clamp(-0.5, 0.5);
+
+          gsap.set(".scroll-reveal", { transformOrigin: "center center", force3D: true });
+
+          ScrollTrigger.create({
+            onUpdate: (self) => {
+              let skew = clamp(self.getVelocity() / -1000);
+              if (Math.abs(skew) > Math.abs(proxy.skew)) {
+                proxy.skew = skew;
+                gsap.to(proxy, {
+                  skew: 0,
+                  duration: 0.8,
+                  ease: "power3",
+                  overwrite: true,
+                  onUpdate: () => skewSetter(proxy.skew)
+                });
+              }
+            }
+          });
+
+          // 7. Premier Schedules Reveal (Specific Text Targeting)
+          gsap.fromTo(".schedules-header h2, .schedules-header p", 
+            { x: -50, opacity: 0 },
+            { 
+              x: 0, 
+              opacity: 1, 
+              duration: 1, 
+              stagger: 0.1, 
+              ease: "power2.out",
+              clearProps: "all",
+              scrollTrigger: {
+                trigger: ".schedules-header",
+                start: "top 95%",
+              }
+            }
+          );
+
+          // Final Refresh for accuracy
+          ScrollTrigger.refresh();
         }, containerRef);
         return () => ctx.revert();
       }, 100);
@@ -122,22 +204,22 @@ export default function Home() {
         
         {/* Featured Routes Section */}
         <div className="space-y-16">
-          <div className="scroll-reveal flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12">
+          <div className="scroll-reveal flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12 schedules-header">
             <div className="space-y-4">
               <p className="text-primary text-sm font-bold uppercase tracking-[0.4em]">Strategic Corridors</p>
-              <h2 className="text-6xl font-black text-white tracking-tighter italic uppercase">Premier Schedules</h2>
+              <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter italic uppercase">Premier Schedules</h2>
             </div>
             <RouteChips />
           </div>
           
-          <div className="scroll-reveal grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+          <div className="scroll-reveal grid gap-12 md:grid-cols-2 lg:grid-cols-3 route-cards-grid">
             {[
               { from: "Kolkata", to: "Durgapur", time: "06:00 AM", price: "799", img: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80" },
               { from: "Mumbai", to: "Pune", time: "09:30 AM", price: "999", img: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" },
               { from: "Delhi", to: "Jaipur", time: "11:00 PM", price: "1499", img: "https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?auto=format&fit=crop&w=800&q=80" },
             ].map((route, i) => (
-              <div key={i} className="group relative h-[500px] rounded-[3rem] overflow-hidden glass-dark border border-white/5 hover:border-primary/20 transition-all duration-700">
-                <Image src={route.img} alt={route.to} fill className="object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" />
+              <div key={i} className="group relative h-[500px] rounded-[3rem] overflow-hidden glass-dark border border-white/5 hover:border-primary/20 transition-all duration-700 card-lift glass-shine route-card deck-card">
+                <Image src={route.img} alt={route.to} fill className="object-cover opacity-40 group-hover:scale-110 transition-transform duration-700 card-image" />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
                 <div className="absolute inset-0 p-10 flex flex-col justify-end">
                    <p className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{route.time} • Daily</p>
@@ -155,7 +237,7 @@ export default function Home() {
         </div>
 
         {/* Tech Showcase Section */}
-        <div className="scroll-reveal glass-dark border-white/5 rounded-[4rem] overflow-hidden grid lg:grid-cols-2 shadow-2xl">
+        <div className="scroll-reveal glass-dark border-white/5 rounded-[4rem] overflow-hidden grid lg:grid-cols-2 shadow-2xl glass-shine">
            <div className="p-20 space-y-12">
               <div className="size-20 rounded-[2.5rem] bg-accent/20 flex items-center justify-center border border-accent/20">
                 <Zap className="size-10 text-accent" />
@@ -212,7 +294,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background z-0" />
         
         {/* Background Watermark */}
-        <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] text-[10rem] md:text-[20rem] font-black text-white italic uppercase tracking-tighter leading-none opacity-5 select-none pointer-events-none z-0">
+        <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[70%] text-[10rem] md:text-[20rem] font-black text-white italic uppercase tracking-tighter leading-none opacity-5 select-none pointer-events-none z-0 watermark">
           UNLIMITED
         </h2>
 

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bus, Clock, MapPin, Filter, IndianRupee, SearchX } from "lucide-react";
+import { SearchAnimations } from "@/components/search-animations";
 
 export default async function SearchPage({
   searchParams,
@@ -32,9 +33,10 @@ export default async function SearchPage({
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-24 flex flex-1 flex-col">
+    <main className="mx-auto max-w-6xl px-4 py-24 flex flex-1 flex-col overflow-hidden">
+      <SearchAnimations />
       {/* Header Banner */}
-      <div className="reveal-up glass-darker overflow-hidden rounded-[2.5rem] mb-8 border-white/5">
+      <div className="search-header glass-darker overflow-hidden rounded-[2.5rem] mb-8 border-white/5">
         <div className="relative h-48 w-full">
           <Image
             src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1600&q=80"
@@ -57,9 +59,9 @@ export default async function SearchPage({
       </div>
 
       {/* Filter Bar */}
-      <form className="reveal-up scroll-reveal glass p-4 rounded-3xl mb-8 flex flex-wrap gap-4 items-end border-white/5">
+      <form className="filter-bar scroll-reveal glass p-6 rounded-[2rem] mb-12 flex flex-wrap gap-6 items-end border-white/5 shadow-2xl">
         <div className="flex-1 min-w-[150px] space-y-2">
-          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Strategic Origin</label>
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Launch</label>
           <select name="from" defaultValue={(params as { from?: string }).from ?? ""} className="w-full h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-white focus:bg-white/10 outline-none transition-all">
             <option value="" className="bg-zinc-900 text-white">All Origins</option>
             <option value="Kolkata" className="bg-zinc-900 text-white">Kolkata</option>
@@ -85,7 +87,7 @@ export default async function SearchPage({
         </div>
 
         <div className="flex-1 min-w-[150px] space-y-2">
-          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Launch</label>
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Launch Date</label>
           <input 
             type="date" 
             name="date" 
@@ -95,7 +97,7 @@ export default async function SearchPage({
         </div>
 
         <div className="flex-1 min-w-[150px] space-y-2">
-          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Expedition Conclusion</label>
+          <label className="text-[10px] uppercase tracking-tighter text-white/30 font-bold ml-1">Conclusion Date</label>
           <input 
             type="date" 
             name="arrivalDate" 
@@ -144,7 +146,7 @@ export default async function SearchPage({
       </form>
 
       {/* Results List */}
-      <div className="grid gap-6">
+      <div className="grid gap-6 results-list">
         {schedules.map((schedule) => {
           const depDate = new Date(schedule.departure_time);
           const arrDate = new Date(schedule.arrival_time);
@@ -153,9 +155,9 @@ export default async function SearchPage({
             : "N/A";
 
           return (
-            <div key={schedule.id} className="reveal-up scroll-reveal group relative">
+            <div key={schedule.id} className="result-card scroll-reveal group relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/0 to-accent/0 rounded-3xl blur opacity-0 group-hover:opacity-20 group-hover:from-primary group-hover:to-accent transition duration-500" />
-              <Card className="relative glass-darker border-white/5 overflow-hidden rounded-3xl transition-all duration-500 group-hover:border-white/10">
+              <Card className="relative glass-darker border-white/5 overflow-hidden rounded-3xl transition-all duration-500 group-hover:border-white/10 card-lift glass-shine deck-card">
                 <CardContent className="p-8">
                   <div className="grid gap-8 md:grid-cols-[2fr_1fr_1fr_auto] items-center">
                     
@@ -192,24 +194,27 @@ export default async function SearchPage({
 
                     {/* Fair Info */}
                     <div className="space-y-1">
-                      <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Base Fair</p>
+                      <p className="text-white/30 text-[10px] uppercase tracking-widest font-bold">Investment</p>
                       <div className="flex items-center gap-1">
                         <IndianRupee className="size-5 text-primary" />
-                        <p className="text-3xl font-bold text-white">{schedule.base_price}</p>
+                        <p className="text-4xl font-black text-white tracking-tighter">{schedule.base_price}</p>
                       </div>
-                      <p className="text-white/40 text-xs">
-                        {duration}h duration
-                      </p>
+                      <div className="flex items-center gap-2 text-white/40 text-[10px] uppercase font-bold tracking-widest">
+                        <span>{duration}h total</span>
+                      </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="text-right">
-                      <p className="text-xs text-accent font-bold mb-4 uppercase tracking-tighter">
-                        {schedule.available_seats_estimate ?? schedule.bus?.total_seats ?? 0} elite seats left
-                      </p>
-                      <Link href={`/schedules/${schedule.id}`}>
-                        <Button variant="premium" size="lg" className="px-8 shadow-xl">
-                          Select Seat
+                    <div className="flex flex-col items-end gap-3">
+                      <div className="flex flex-col items-end">
+                        <span className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Availability</span>
+                        <p className="text-xs text-accent font-bold uppercase tracking-tighter bg-accent/10 px-3 py-1 rounded-full border border-accent/20">
+                          {schedule.available_seats_estimate ?? schedule.bus?.total_seats ?? 0} Elite Seats Left
+                        </p>
+                      </div>
+                      <Link href={`/schedules/${schedule.id}`} className="w-full">
+                        <Button variant="premium" size="lg" className="w-full px-10 shadow-2xl btn-premium text-base font-bold h-14 rounded-2xl">
+                          Launch Journey
                         </Button>
                       </Link>
                     </div>

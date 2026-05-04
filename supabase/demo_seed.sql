@@ -68,13 +68,15 @@ days as (
   select generate_series(1, 7) as day_offset
 ),
 slots as (
-  select 1 as slot, time '06:30' as dep, interval '3 hour 20 minute' as travel, 499::numeric as base_price
+  select 1 as slot, time '08:30' as dep, interval '3 hour 20 minute' as travel, 499::numeric as base_price
   union all
-  select 2, time '11:15', interval '5 hour 40 minute', 699::numeric
+  select 2, time '14:15', interval '4 hour 10 minute', 699::numeric
   union all
-  select 3, time '17:45', interval '6 hour 15 minute', 799::numeric
+  select 3, time '18:45', interval '5 hour 30 minute', 799::numeric
   union all
-  select 4, time '22:15', interval '8 hour 30 minute', 899::numeric
+  select 4, time '22:15', interval '7 hour 45 minute', 899::numeric
+  union all
+  select 5, time '05:30', interval '3 hour 00 minute', 450::numeric
 ),
 expanded as (
   select

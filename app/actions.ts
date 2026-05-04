@@ -120,6 +120,7 @@ export async function createReservation(formData: FormData) {
     .map((v) => Number(v.trim()))
     .filter(Boolean);
   const method = String(formData.get("paymentMethod") || "upi");
+  const discountApplied = Number(formData.get("discountApplied") || "0");
 
   const supabase = await createClient();
   const {
@@ -141,7 +142,7 @@ export async function createReservation(formData: FormData) {
   const conflict = seatNumbers.find((s) => alreadyTaken.has(s));
   if (conflict) return { error: `Seat ${conflict} was just booked. Please reselect.` };
 
-  const amount = Number(schedule.base_price) * seatNumbers.length;
+  const amount = Math.max(0, (Number(schedule.base_price) * seatNumbers.length) - discountApplied);
   const { data: reservation, error } = await supabase
     .from("reservations")
     .insert({

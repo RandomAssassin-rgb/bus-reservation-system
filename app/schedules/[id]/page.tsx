@@ -22,7 +22,7 @@ export default async function ScheduleDetailPage({ params }: { params: Promise<{
   ];
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-24 grid flex-1 gap-8 md:grid-cols-[1fr_420px]">
+    <main className="mx-auto max-w-6xl px-4 pt-36 pb-24 grid flex-1 gap-8 md:grid-cols-[1fr_420px]">
       <div className="space-y-8">
         {/* Journey Header */}
         <Card className="reveal-up glass-darker overflow-hidden border-white/5 rounded-[3rem]">
